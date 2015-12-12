@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>en Jen</title>
+	<style>
+	textarea {
+		min-width: 50%;
+		max-width: calc(100% - 48px);
+		min-height: 200px;
+	}
+	</style>
+	<script>
+queue = [[150, 150, 90]];
+
+function handle_submit(f, e) {
+	if (e) e.preventDefault();
+	queue.splice(1);
+	ctx.fillStyle = "white";
+	ctx.fillRect(0, 0, c.width, c.height);
+	var last_x = queue[0][0];
+	var last_y = queue[0][1];
+	var last_a = queue[0][2];
+	// Interpret instructions
+	var lines = f.input.value.split('\n');
+	for (var x = 0, y = lines.length; x < y; ++ x) {
+		var line = lines[x];
+		// Moving
+		var result = /^Moving\s(-?\d+)mm\sat\s(-?\d+)cm\/s$/.exec(line);
+		if (result) {
+			// queue.push(["move", +result[1], +result[2]]);
+			// console.log(["move", +result[1], +result[2]]);
+			var dist = +result[1] * 0.1;
+			var speed = +result[2];
+			// console.log(Math.floor(dist / speed * 50) + " steps");
+			for (var i = Math.floor(dist / speed * 50); i --; ) {
+				last_x += speed * 0.05 * Math.cos(last_a / 180 * Math.PI);
+				last_y -= speed * 0.05 * Math.sin(last_a / 180 * Math.PI);
+				queue.push([last_x, last_y, last_a]);
+			}
+			continue;
+		}
+		// Turning
+		var result = /^Turning\s(-?\d+)deg\sat\s(-?\d+)deg\/s$/.exec(line);
+		if (result) {
+			// queue.push(["turn", +result[1], +result[2]]);
+			// console.log(["turn", +result[1], +result[2]]);
+			var angle = +result[1];
+			var speed = +result[2];
+			speed = Math.abs(speed) * sign(angle);
+			// console.log(Math.abs(Math.floor(angle / speed * 20)) + " steps");
+			for (var i = Math.abs(Math.floor(angle / speed * 20)); i --; ) {
+				last_a += speed * 0.05;
+				queue.push([last_x, last_y, last_a]);
+			}
+			continue;
+		}
+		// Set
+		var result = /^Setting\sspeeds\s\((-?\d+)cm\/s,\s(-?\d+)deg\/s\)$/.exec(line);
+		if (result) {
+			// Make sure it will stop
+			if (lines.length < x + 2) continue;
+			var time = /^(\d+)ms elapsed$/.exec(lines[x + 2]);
+			// console.log(time);
+			if (!time) continue;
+			// Determine how long it moved before stopping
+			var ms = +time[1];
+			var ds = 0.05 * +result[1];
+			var as = 0.05 * +result[2];
+			// queue.push(["set", +result[1], +result[2], +time[1]]);
+			// console.log(["set", +result[1], +result[2], +time[1]]);
+			// console.log(Math.floor(ms * 0.05) + " steps");
+			for (var i = Math.floor(ms * 0.05); i --; ) {
+				last_x += ds * Math.cos(last_a / 180 * Math.PI);
+				last_y -= ds * Math.sin(last_a / 180 * Math.PI);
+				last_a += as;
+				queue.push([last_x, last_y, last_a]);
+			}
+			x += 2;
+			continue;
+		}
+		// Stop
+		if (line == "Stopping") {
+			// queue.push(["stop"]);
+			// console.log(["stop"]);
+			continue;
+		}
+	}
+	// console.log(queue);
+	render(queue[0][0], queue[0][1], queue[0][2]);
+}
+
+function sign(n) {
+	if (n) return n / n;
+	return 0;
+}
+
+function render(last_x, last_y, last_a) {
+	if (queue.length < 2) return;
+	var p2 = queue.splice(1, 1)[0];
+	// Fade out old content
+	ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
+	ctx.fillRect(0, 0, c.width, c.height);
+	// Movement line
+	if (p2[0] != last_x || p2[1] != last_y) {
+		ctx.beginPath();
+		ctx.strokeStyle = "red";
+		ctx.moveTo(last_x * 2, last_y * 2);
+		ctx.lineTo(p2[0] * 2, p2[1] * 2);
+		ctx.stroke();
+	}
+	// Angle line
+	if (p2[2] != last_a) {
+		ctx.strokeStyle = "blue";
+		var a1 = last_a / 180 * Math.PI;
+		var a2 = p2[2] / 180 * Math.PI;
+		var r = 8;
+		ctx.beginPath();
+		ctx.moveTo(2 * (last_x + r * Math.cos(a1)),
+			2 * (last_y - r * Math.sin(a1)));
+		ctx.lineTo(2 * (p2[0] + r * Math.cos(a2)),
+			2 * (p2[1] - r * Math.sin(a2)));
+		ctx.stroke();
+	}
+	// Render next line
+	if (queue.length > 1) {
+		setTimeout(function() {
+			render(p2[0], p2[1], p2[2]);
+		}, 20);
+	}
+}
+
+window.addEventListener("load", function() {
+	c = document.getElementById("output");
+	ctx = c.getContext("2d");
+});
+
+function handle_demo() {
+	var f = document.getElementsByTagName("form")[0];
+	f.input.value = "Turning 118deg at 20deg/s\nSetting speeds (20cm/s, 0deg/s)\nStopping\n352ms elapsed\nTotal distance: 70mm\nTurning 180deg at 20deg/s\nMoving 70mm at 20cm/s\nTurning 62deg at 20deg/s";
+	handle_submit(f, null);
+}
+	</script>
+</head>
+<body>
+<form onsubmit='handle_submit(this, event)'>
+	<textarea name='input'></textarea>
+	<input type='submit' value='Render' />
+	<button onclick='handle_demo()'>Demo</button>
+</form>
+<canvas id='output' width='600' height='600'></canvas>
+</body>
+</html>
