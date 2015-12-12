@@ -1,5 +1,6 @@
 # import create
 import time
+import math
 import random
 
 class PseudoCreate:
@@ -35,7 +36,7 @@ class PseudoCreate:
 		if debug:
 			print("Moving %dmm at %dcm/s" % (distance, speed))
 		self.go(speed, 0, debug=False)
-		time.sleep(abs(distance / speed))
+		time.sleep(abs(distance / speed * 0.1))
 		self.stop(debug=False)
 	def turn(self, angle, speed, debug=True):
 		if debug:
@@ -111,8 +112,7 @@ jen.toFullMode()
 
 moves = []
 
-prog = input("What do you want me to do? ").lower()
-if prog == "random":
+def random_line():
 	moves.append(["turn", random.randrange(0, 360)])
 	jen.turn(moves[0][1], 20)
 	moves.append(["go", 0])
@@ -130,3 +130,17 @@ if prog == "random":
 	jen.move(moves[1][1], 20)
 	jen.turn(angle_diff(0, -180 - moves[0][1]), 20)
 	print(jen)
+
+def zigzag(length=100):
+	cycles = random.randrange(2, 5)
+	angle = random.randrange(10, 40)
+	for i in range(cycles):
+		jen.turn(angle, 20)
+		jen.move(length, 20)
+		jen.turn((-angle * 2), 20)
+		jen.move(length, 20)
+		jen.turn(angle, 20)
+	# Get back to original spot.
+	jen.turn(180, 20)
+	jen.move(length * 2 * cycles * math.cos(angle / 180 * math.pi), 20)
+	jen.turn(180, 20)
