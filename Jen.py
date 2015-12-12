@@ -1,6 +1,6 @@
 # import create
 import time
-import math
+from math import pi, cos
 import random
 
 class PseudoCreate:
@@ -142,5 +142,5 @@ def zigzag(length=100):
 		jen.turn(angle, 20)
 	# Get back to original spot.
 	jen.turn(180, 20)
-	jen.move(length * 2 * cycles * math.cos(angle / 180 * math.pi), 20)
+	jen.move(length * 2 * cycles * cos(angle / 180 * pi), 20)
 	jen.turn(180, 20)
