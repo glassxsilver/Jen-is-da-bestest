@@ -20,6 +20,8 @@ def movecustom(livemode, movelist=None):
 			doinput(cmd)
 	else: # live mode
 		while inkey != 'q': # doesn't matter if input isn't w/a/s/d
+			# inkey=input().....shouldn't the user be putting in keys if its live mode? 
+					# Or is it all the keys they initially put in?
 			doinput(inkey)
 	return
 
