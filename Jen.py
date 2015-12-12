@@ -8,8 +8,9 @@ class PseudoCreate:
 		self.fullMode = False
 		self.moveSpeed = 0
 		self.turnSpeed = 0
+		self.lastTime = 0
 	def __str__(self):
-		return "PseudoCreate {\n\tport: %d\n\tfullMode: %s\n\tmoveSpeed: %dm/s\n\tturnSpeed: %ddeg/s\n}" % (
+		return "PseudoCreate {\n\tport: %d\n\tfullMode: %s\n\tmoveSpeed: %dcm/s\n\tturnSpeed: %ddeg/s\n}" % (
 			self.port, self.fullMode, self.moveSpeed, self.turnSpeed)
 	def __repr__(self):
 		return "PseudoCreate(port=%d)" % self.port
@@ -19,8 +20,13 @@ class PseudoCreate:
 		self.moveSpeed = moveSpeed
 		self.turnSpeed = turnSpeed
 		# For debugging purposes
+		if self.lastTime:
+			print("%dms elapsed" % (1e3 * (time.clock() - self.lastTime)))
 		if debug:
+			self.lastTime = time.clock()
 			print("Setting speeds (%dcm/s, %ddeg/s)" % (moveSpeed, turnSpeed))
+		else:
+			self.lastTime = 0
 	def stop(self, debug=True):
 		if debug:
 			print("Stopping")
@@ -97,7 +103,7 @@ except:
 	create = PseudoCreateModule()
 
 def angle_diff(a1, a2):
-	return (a2 - a1 + 180) % 360 - 180
+	return ((a2 % 360) - (a1 % 360) + 180) % 360 - 180
 
 # jen = create.Create(7)
 jen = PseudoCreate(7)
@@ -116,11 +122,11 @@ if prog == "random":
 		if sensors[create.LEFT_BUMP] + sensors[create.RIGHT_BUMP]:
 			break
 		moves[1][1] += 10
-		print("0.05 seconds")
+		# print("0.05 seconds")
 		time.sleep(0.05)
-	print("Total distance: %dmm" % moves[1][1])
 	jen.stop()
+	print("Total distance: %dmm" % moves[1][1])
 	jen.turn(180, 20)
 	jen.move(moves[1][1], 20)
-	jen.turn(angle_diff(moves[0][1] + 180, 0), 20)
+	jen.turn(angle_diff(0, -180 - moves[0][1]), 20)
 	print(jen)
