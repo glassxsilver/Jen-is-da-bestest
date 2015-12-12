@@ -30,9 +30,9 @@ function handle_submit(f, e) {
 			// queue.push(["move", +result[1], +result[2]]);
 			// console.log(["move", +result[1], +result[2]]);
 			var dist = +result[1] * 0.1;
-			var speed = +result[2];
+			var speed = Math.abs(+result[2]) * sign(dist);
 			// console.log(Math.floor(dist / speed * 50) + " steps");
-			for (var i = Math.floor(dist / speed * 50); i --; ) {
+			for (var i = Math.floor(Math.abs(dist / speed * 50)); i --; ) {
 				last_x += speed * 0.05 * Math.cos(last_a / 180 * Math.PI);
 				last_y -= speed * 0.05 * Math.sin(last_a / 180 * Math.PI);
 				queue.push([last_x, last_y, last_a]);
@@ -90,7 +90,7 @@ function handle_submit(f, e) {
 }
 
 function sign(n) {
-	if (n) return n / n;
+	if (n) return n / Math.abs(n);
 	return 0;
 }
 
