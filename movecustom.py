@@ -1,8 +1,8 @@
-#import create
+import create
 import random
 import time
 
-#jen = create.Create(8, 3)
+jen = create.Create(8, 3)
 
 def movecustom(movelist=None):
 	print('Enter w, a, s, or d for movement \nEnter q to finish')
