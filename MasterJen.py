@@ -5,7 +5,7 @@ import random
 import time
 from math import pi, cos
 
-jen = create.Create(8, 3)
+jen = create.Create(7, 3)
 
 def angle_diff(a1, a2):
 	return ((a2 % 360) - (a1 % 360) + 180) % 360 - 180
@@ -60,3 +60,42 @@ def zigzag(length=100):
 	jen.turn(180, 20)
 	jen.move(length * 2 * cycles * cos(angle / 180 * pi), 20)
 	jen.turn(180, 20)
+
+def movecustom(livemode, movelist=None):
+	print('Enter w, a, s, or d for movement \nEnter q to finish')
+	print('w and s move 15 centimeters, a and d turn 45 degrees')
+	inkey = input('Enter values:\n')
+	if livemode == 0: # list mode
+		if movelist == None: # when not given a list, make list
+			movelist = []
+			while inkey != 'q':
+				if inkey == 'w' or inkey == 'a' or\
+				inkey == 's' or inkey == 'd':
+					movelist.append(inkey)
+				inkey = input()
+		for cmd in movelist: # always executes if in list mode
+			doinput(cmd)
+			inkey = 'j'
+	else: # live mode
+		while inkey != 'q': # doesn't matter if input isn't w/a/s/d
+			# inkey=input().....shouldn't the user be putting in keys if its live mode? 
+					# Or is it all the keys they initially put in?
+			inkey = input()
+			doinput(inkey)
+			inkey = 'j'
+	return
+
+def doinput(movekey): # receives anything, only moves if string of w/a/s/d
+	if movekey == 'w':
+		jen.move(15, 15) # move forwards 15cm in 1 second
+		time.sleep(1)
+		jen.stop()
+	elif movekey == 's':
+		jen.move(-15,15) # move backwards 15cm in 1 second
+		time.sleep(1)
+		jen.stop()
+	elif movekey == 'a':
+		jen.turn(45) # turn 45* CCW
+	elif movekey == 'd':
+		jen.turn(-45) # turn 45* CW
+	return
