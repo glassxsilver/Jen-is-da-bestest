@@ -64,9 +64,9 @@ def zigzag(length=100):
 def movecustom(livemode, movelist=None):
 	print('Enter w, a, s, or d for movement \nEnter q to finish')
 	print('w and s move 15 centimeters, a and d turn 45 degrees')
-	inkey = input('Enter values:\n')
 	if livemode == 0: # list mode
 		if movelist == None: # when not given a list, make list
+			inkey = input('Enter values:\n')
 			movelist = []
 			while inkey != 'q':
 				if inkey == 'w' or inkey == 'a' or\
@@ -75,24 +75,19 @@ def movecustom(livemode, movelist=None):
 				inkey = input()
 		for cmd in movelist: # always executes if in list mode
 			doinput(cmd)
-			inkey = 'j'
 	else: # live mode
+		inkey = input('Enter values:\n')
 		while inkey != 'q': # doesn't matter if input isn't w/a/s/d
-			# inkey=input().....shouldn't the user be putting in keys if its live mode? 
-					# Or is it all the keys they initially put in?
-			inkey = input()
 			doinput(inkey)
-			inkey = 'j'
+			inkey = input()
 	return
 
 def doinput(movekey): # receives anything, only moves if string of w/a/s/d
 	if movekey == 'w':
 		jen.move(15, 15) # move forwards 15cm in 1 second
-		time.sleep(1)
 		jen.stop()
 	elif movekey == 's':
 		jen.move(-15,15) # move backwards 15cm in 1 second
-		time.sleep(1)
 		jen.stop()
 	elif movekey == 'a':
 		jen.turn(45) # turn 45* CCW
