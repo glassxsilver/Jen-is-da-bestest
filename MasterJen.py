@@ -28,6 +28,7 @@ def movecircle(radius_m, speed_cmps):
 	time.sleep(radius_movetime_sec)
 	jen.stop()
 	return
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 def moverandom():
@@ -102,3 +103,5 @@ def doinput(movekey): # receives anything, only moves if string of w/a/s/d
 		jen.turn(-45) # turn 45* CW
 	return
 >>>>>>> origin/master
+=======
+>>>>>>> parent of 942ba81... yes
