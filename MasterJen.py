@@ -25,3 +25,19 @@ def movecircle(radius_m, speed_cmps):
 	time.sleep(radius_movetime_sec)
 	jen.stop()
 	return
+
+def moverandom():
+	moves.append(["turn", random.randrange(0, 360)])
+	jen.turn(moves[0][1], 20)
+	moves.append(["go", 0])
+	jen.go(20, 0)
+	while True:
+		sensors = jen.sensors([create.LEFT_BUMP, create.RIGHT_BUMP])
+		if sensors[create.LEFT_BUMP] + sensors[create.RIGHT_BUMP]:
+			break
+		moves[1][1] += 10
+		time.sleep(0.05)
+	jen.stop()
+	jen.turn(180, 20)
+	jen.move(moves[1][1], 20)
+	jen.turn(angle_diff(moves[0][1] + 180, 0), 20)
