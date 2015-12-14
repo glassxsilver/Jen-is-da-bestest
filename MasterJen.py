@@ -20,40 +20,40 @@ def movecircle(radius_m, speed_cmps):
 	time.sleep(radius_movetime_sec)
 	jen.stop()
 	jen.turn(-90)
+	time.sleep(5)
 	jen.go(speed_cmps, deg_per_sec)
 	time.sleep(circum_movetime_sec)
-	jen.stop()
 	jen.turn(-90)
+	time.sleep(5)
 	jen.move((radius_m * 100), speed_cmps)
 	time.sleep(radius_movetime_sec)
 	jen.stop()
 	return
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-def moverandom():
-=======
 def random_line():
 	moves = []
->>>>>>> origin/master
 	moves.append(["turn", random.randrange(0, 360)])
 	jen.turn(moves[0][1], 20)
+	tim = moves[0][1] / 20 * 1.5
+	time.sleep(tim)
 	moves.append(["go", 0])
 	jen.go(20, 0)
 	while True:
 		sensors = jen.sensors([create.LEFT_BUMP, create.RIGHT_BUMP])
 		if sensors[create.LEFT_BUMP] + sensors[create.RIGHT_BUMP]:
 			break
-		moves[1][1] += 10
+		moves[1][1] += 1
 		time.sleep(0.05)
 	jen.stop()
 	jen.turn(180, 20)
+	tim.sleep(9 + 1)
 	jen.move(moves[1][1], 20)
-<<<<<<< HEAD
-	jen.turn(angle_diff(moves[0][1] + 180, 0), 20)
-=======
+	tim = moves[1][1] / 20 * 1.5
+	time.sleep(tim)
 	jen.turn(angle_diff(0, -180 - moves[0][1]), 20)
-	print(jen)
+	time.sleep(angle_diff(0, -180 - moves[0][1]) / 20)
+	print(jen) # Why?
+	return
 
 def zigzag(length=100):
 	cycles = random.randrange(2, 5)
@@ -102,6 +102,3 @@ def doinput(movekey): # receives anything, only moves if string of w/a/s/d
 	elif movekey == 'd':
 		jen.turn(-45) # turn 45* CW
 	return
->>>>>>> origin/master
-=======
->>>>>>> parent of 942ba81... yes

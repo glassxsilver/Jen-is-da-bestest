@@ -31,7 +31,7 @@ import threading
 
 # Replaces old python chr command, but puts it into a byte string
 def _chr(x):
-	return bytes([x])
+    return bytes([x])
 
 
 
@@ -496,12 +496,12 @@ class SensorFrame:
             self.maxButton
 
         # bytes 12, 13: distance
-        highVal, lowVal = _toTwosComplement2Bytes( self.distance )
+        highVal, lowVal = _toTwosComplement2Bytes( int(self.distance) )
         slist[12] = highVal
         slist[13] = lowVal
 
         # bytes 14, 15: angle
-        highVal, lowVal = _toTwosComplement2Bytes( self.rawAngle )
+        highVal, lowVal = _toTwosComplement2Bytes( int(self.rawAngle) )
         slist[14] = highVal
         slist[15] = lowVal
 
@@ -628,17 +628,17 @@ class Create:
     _debug = False
 
     def _read(self, size=None):
-    	val = None
-    	if (size == None):
-    		val = self.ser.read(size=None)
-    	elif (size < 0):
-    		val = self.ser.read(size=None)
-    	else:
-    		val = self.ser.read(size)
-    	if (self._debug == True):
-    		print(val)
-    		print(type(val))
-    	return val
+        val = None
+        if (size == None):
+            val = self.ser.read(size=None)
+        elif (size < 0):
+            val = self.ser.read(size=None)
+        else:
+            val = self.ser.read(size)
+        if (self._debug == True):
+            print(val)
+            print(type(val))
+        return val
 
 
     def _write(self, byte):
@@ -890,7 +890,7 @@ class Create:
 
         # get the two bytes from the velocity
         # these come back as numbers, so we will chr them
-        velHighVal, velLowVal = _toTwosComplement2Bytes( roomba_mm_sec )
+        velHighVal, velLowVal = _toTwosComplement2Bytes( int(roomba_mm_sec) )
 
         # get the two bytes from the radius in the same way
         # note the special cases
@@ -899,7 +899,7 @@ class Create:
                 roomba_radius_mm = -1
             else: # default is 'CCW' (turning left)
                 roomba_radius_mm = 1
-        radiusHighVal, radiusLowVal = _toTwosComplement2Bytes( roomba_radius_mm )
+        radiusHighVal, radiusLowVal = _toTwosComplement2Bytes( int(roomba_radius_mm) )
 
         #print 'bytes are', velHighVal, velLowVal, radiusHighVal, radiusLowVal
 
@@ -1673,14 +1673,14 @@ class Create:
 
     def _waitForDistance(self, distance_mm):
         self._write(WAITDIST)
-        leftHighVal, leftLowVal = _toTwosComplement2Bytes( distance_mm )
+        leftHighVal, leftLowVal = _toTwosComplement2Bytes( int(distance_mm) )
         self._write( _chr(leftHighVal) )
         self._write( _chr(leftLowVal) )
         return
 
     def _waitForAngle(self, angle_deg):
         self._write(WAITANGLE)
-        leftHighVal, leftLowVal = _toTwosComplement2Bytes( angle_deg )
+        leftHighVal, leftLowVal = _toTwosComplement2Bytes( int(angle_deg) )
         self._write( _chr(leftHighVal) )
         self._write( _chr(leftLowVal) )
         return
