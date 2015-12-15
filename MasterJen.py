@@ -1,31 +1,30 @@
 # Jen Master File
+# ~18 seconds to turn 360 degrees
 
 import create
 import random
 import time
-from math import pi, cos
+from math import pi, cos, fabs
 
-jen = create.Create(7, 3)
+jen = create.Create(3, 3)
 
 def angle_diff(a1, a2):
 	return ((a2 % 360) - (a1 % 360) + 180) % 360 - 180
 
-def movecircle(radius_m, speed_cmps):
-	circum_cm = (2 * pi * radius_m) * 100
-	circum_movetime_sec = circum_cm / speed_cmps
-	deg_per_sec = -360 / circum_movetime_sec # Negative = turn clockwise
-	radius_movetime_sec = radius_m / speed_cmps
-
-	jen.move((radius_m * 100), speed_cmps)
+def movecircle(radius_m, forward=1, speed_cmps=20): # forward should be 1 or -1
+	circum_cm = fabs((2 * pi * radius_m) * 100)
+	circum_movetime_sec = fabs(circum_cm / speed_cmps)
+	deg_per_sec = -360 / circum_movetime_sec * forward # Negative = turn clockwise
+	radius_movetime_sec = fabs(radius_m / speed_cmps)
+	
+	jen.move((radius_m * 100 * forward), speed_cmps)
 	time.sleep(radius_movetime_sec)
 	jen.stop()
-	jen.turn(-90)
-	time.sleep(5)
-	jen.go(speed_cmps, deg_per_sec)
+	jen.turn(-90 * forward, 90)
+	jen.go(speed_cmps * forward, deg_per_sec)
 	time.sleep(circum_movetime_sec)
-	jen.turn(-90)
-	time.sleep(5)
-	jen.move((radius_m * 100), speed_cmps)
+	jen.turn(-90 * forward, 90)
+	jen.move((radius_m * 100 * forward), speed_cmps)
 	time.sleep(radius_movetime_sec)
 	jen.stop()
 	return
@@ -33,8 +32,10 @@ def movecircle(radius_m, speed_cmps):
 def random_line():
 	moves = []
 	moves.append(["turn", random.randrange(0, 360)])
-	jen.turn(moves[0][1], 20)
-	tim = moves[0][1] / 20 * 1.5
+	if moves[0][1] > 180:
+		moves[0][1] = (moves[0][1] - 180) * -1
+	jen.turn(moves[0][1], 90)
+	tim = fabs(moves[0][1] / 90)
 	time.sleep(tim)
 	moves.append(["go", 0])
 	jen.go(20, 0)
@@ -45,29 +46,32 @@ def random_line():
 		moves[1][1] += 1
 		time.sleep(0.05)
 	jen.stop()
-	jen.turn(180, 20)
-	tim.sleep(9 + 1)
-	jen.move(moves[1][1], 20)
-	tim = moves[1][1] / 20 * 1.5
+	jen.turn(180, 90)
+	time.sleep(2)
+	jen.move(moves[1][1], 30)
+	tim = moves[1][1] / 30
 	time.sleep(tim)
-	jen.turn(angle_diff(0, -180 - moves[0][1]), 20)
-	time.sleep(angle_diff(0, -180 - moves[0][1]) / 20)
-	print(jen) # Why?
+	jen.turn(angle_diff(0, -180 - moves[0][1]), 90)
+	time.sleep(angle_diff(0, -180 - moves[0][1]) / 90)
+	#print(jen) # Why?
 	return
 
-def zigzag(length=100):
-	cycles = random.randrange(2, 5)
-	angle = random.randrange(10, 40)
+def zigzag(length_cm=100, randmode = 1, cycles=None):
+	angle = 45
+	if cycles==None:
+		cycles = random.randrange(2, 5)
+	if randmode == 1:
+		angle = random.randrange(10, 40)
 	for i in range(cycles):
-		jen.turn(angle, 20)
-		jen.move(length, 20)
-		jen.turn((-angle * 2), 20)
-		jen.move(length, 20)
-		jen.turn(angle, 20)
+		jen.turn(angle, angle)
+		jen.move(length_cm, 90)
+		jen.turn((-angle * 2), angle)
+		jen.move(length_cm, 90)
+		jen.turn(angle, angle)
 	# Get back to original spot.
-	jen.turn(180, 20)
-	jen.move(length * 2 * cycles * cos(angle / 180 * pi), 20)
-	jen.turn(180, 20)
+	jen.turn(180, 90)
+	jen.move(length_cm * 2 * cycles * cos(angle / 180 * pi), 20)
+	jen.turn(180, 90)
 
 def movecustom(livemode, movelist=None):
 	print('Enter w, a, s, or d for movement \nEnter q to finish')
@@ -98,7 +102,7 @@ def doinput(movekey): # receives anything, only moves if string of w/a/s/d
 		jen.move(-15,15) # move backwards 15cm in 1 second
 		jen.stop()
 	elif movekey == 'a':
-		jen.turn(45) # turn 45* CCW
+		jen.turn(45, 90) # turn 45* CCW
 	elif movekey == 'd':
-		jen.turn(-45) # turn 45* CW
+		jen.turn(-45, 90) # turn 45* CW
 	return
